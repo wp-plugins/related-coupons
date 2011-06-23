@@ -1,0 +1,23 @@
+.coupon-network-related-coupon {
+	float: left;
+	margin: 0 0 10px;
+	width: 33.3%;
+}
+
+.coupon-network-related-coupon-clear {
+	display: block;
+	clear: both;
+}
+
+.coupon-network-coupon-image-link {
+	float: left;
+	margin: 0;
+}
+
+.coupon-network-coupon-title {
+	margin-left: 110px; 
+}
+
+.coupon-network-coupon-expires {
+	font-size: 80%;
+}
