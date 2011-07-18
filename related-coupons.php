@@ -3,7 +3,7 @@
  Plugin Name: Coupon Network Related Coupons
  Plugin URI: http://www.couponnetwork.com
  Description: Easily display related coupons from Coupon Network on your blog posts.  Also includes shortcodes and template tags that you can use to display related coupons outside your blog posts.
- Version: 1.0.0
+ Version: 1.0.1
  Author: Coupon Network
  Author URI: http://www.couponnetwork.com
  */
@@ -20,7 +20,7 @@ if(!class_exists('Related_Coupons')) {
 
 		private $_compare_Keywords = null;
 
-		private $_data_Version = '1.0.0';
+		private $_data_Version = '1.0.1';
 		
 		private $_ir_BaseUrl = 'http://partners.couponnetwork.com/c/%d/11107/520';
 
@@ -138,27 +138,45 @@ if(!class_exists('Related_Coupons')) {
 			$meta = $this->getPostSettings($post->ID);
 			if(is_singular($types) && 'yes' != $meta['opt-out']) {
 
-				$coupons = $this->getRelatedCouponDataForPost($post->ID);
-				
-				if(!empty($coupons)) {
+				$couponContent = $this->getRelatedCouponContentForPost($post->ID);
+				if(!empty($couponContent)) {
 					if(!empty($settings['related-coupons-title'])) {
 						$content .= "<h3 class='related-coupons-title'>{$settings['related-coupons-title']}</h3>";
 					}
-					
-					$content .= '<div class="coupon-network-related-coupons">';
-					foreach($coupons as $coupon) {
-						$coupon['link'] = add_query_arg(array('utm_campaign' => 'related_coupons'), $coupon['link']);
-						
-						if(!empty($settings['affiliate-id'])) {
-							$coupon['link'] = add_query_arg(array('u' => urlencode($coupon['link'])), sprintf($this->_ir_BaseUrl, $settings['affiliate-id']));
-						}
-						
-						$content .= $this->getCouponMarkupForCouponData($coupon);
-					}
-					$content .= '</div>';
+					$content .= $couponContent;
 				}
 			}
 
+			return $content;
+		}
+
+		public function getRelatedCouponContentForPost($postId) {
+			if(empty($postId)) {
+				global $post;
+				$postId = $post->ID;
+			}
+			
+			$coupons = $this->getRelatedCouponDataForPost($post->ID);
+				
+			$content = '';
+			if(!empty($coupons)) {
+				if(!empty($settings['related-coupons-title'])) {
+					$content .= "<h3 class='related-coupons-title'>{$settings['related-coupons-title']}</h3>";
+				}
+				
+				$content .= '<div class="coupon-network-related-coupons">';
+				foreach($coupons as $coupon) {
+					$coupon['link'] = add_query_arg(array('utm_campaign' => 'related_coupons'), $coupon['link']);
+					
+					if(!empty($settings['affiliate-id'])) {
+						$coupon['link'] = add_query_arg(array('u' => urlencode($coupon['link'])), sprintf($this->_ir_BaseUrl, $settings['affiliate-id']));
+					}
+					
+					$content .= $this->getCouponMarkupForCouponData($coupon);
+				}
+				$content .= '</div>';
+			}
+			
 			return $content;
 		}
 
