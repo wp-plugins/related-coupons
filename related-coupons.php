@@ -3,7 +3,7 @@
  Plugin Name: Coupon Network Related Coupons
  Plugin URI: http://www.couponnetwork.com
  Description: Easily display related coupons from Coupon Network on your blog posts.  Also includes shortcodes and template tags that you can use to display related coupons outside your blog posts.
- Version: 1.0.1
+ Version: 1.0.2
  Author: Coupon Network
  Author URI: http://www.couponnetwork.com
  */
@@ -20,7 +20,7 @@ if(!class_exists('Related_Coupons')) {
 
 		private $_compare_Keywords = null;
 
-		private $_data_Version = '1.0.1';
+		private $_data_Version = '1.0.2';
 		
 		private $_ir_BaseUrl = 'http://partners.couponnetwork.com/c/%d/11107/520';
 
@@ -122,21 +122,17 @@ if(!class_exists('Related_Coupons')) {
 		}
 
 		public function enqueueFrontendResources() {
-			$settings = $this->getSettings();
-			$types = array_keys($settings['post-types']);
-			if(is_singular($types)) {
-				wp_enqueue_style('related-coupons-frontend',   plugins_url('resources/frontend/related-coupons.css', __FILE__), array(), $this->_data_Version);
-				wp_enqueue_script('related-coupons-frontend',   plugins_url('resources/frontend/related-coupons.js', __FILE__), array('jquery'), $this->_data_Version);
-			}
+			wp_enqueue_style('related-coupons-frontend',   plugins_url('resources/frontend/related-coupons.css', __FILE__), array(), $this->_data_Version);
+			wp_enqueue_script('related-coupons-frontend',   plugins_url('resources/frontend/related-coupons.js', __FILE__), array('jquery'), $this->_data_Version);
 		}
 
 		public function possiblyAddRelatedCouponsToEndOfPostContent($content) {
 			$settings = $this->getSettings();
-			$types = array_keys($settings['post-types']);
+			$types = array_keys((array)$settings['post-types']);
 
 			global $post;
 			$meta = $this->getPostSettings($post->ID);
-			if(is_singular($types) && 'yes' != $meta['opt-out']) {
+			if(!empty($types) && is_singular($types) && 'yes' != $meta['opt-out']) {
 
 				$couponContent = $this->getRelatedCouponContentForPost($post->ID);
 				if(!empty($couponContent)) {
@@ -256,6 +252,7 @@ if(!class_exists('Related_Coupons')) {
 
 		private function setSettings($settings) {
 			if(is_array($settings)) {
+				$settings['post-types'] = (array)$settings['post-types'];
 				update_option($this->_option_SettingsKey, $settings);
 				wp_cache_set($this->_option_SettingsKey, $settings, null, time() + 24 * 60 * 60);
 			}
