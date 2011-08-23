@@ -3,7 +3,7 @@
  Plugin Name: Coupon Network Related Coupons
  Plugin URI: http://www.couponnetwork.com
  Description: Easily display related coupons from Coupon Network on your blog posts.  Also includes shortcodes and template tags that you can use to display related coupons outside your blog posts.
- Version: 1.0.2
+ Version: 1.0.4
  Author: Coupon Network
  Author URI: http://www.couponnetwork.com
  */
@@ -20,7 +20,7 @@ if(!class_exists('Related_Coupons')) {
 
 		private $_compare_Keywords = null;
 
-		private $_data_Version = '1.0.2';
+		private $_data_Version = '1.0.4';
 		
 		private $_ir_BaseUrl = 'http://partners.couponnetwork.com/c/%d/11107/520';
 
@@ -161,14 +161,22 @@ if(!class_exists('Related_Coupons')) {
 				}
 				
 				$content .= '<div class="coupon-network-related-coupons">';
+				
+				$counter = 0;
 				foreach($coupons as $coupon) {
-					$coupon['link'] = add_query_arg(array('utm_campaign' => 'related_coupons'), $coupon['link']);
+					$counter++;
+					
+					$coupon['link'] = add_query_arg(array('utm_medium' => 'related_coupons'), $coupon['link']);
 					
 					if(!empty($settings['affiliate-id'])) {
 						$coupon['link'] = add_query_arg(array('u' => urlencode($coupon['link'])), sprintf($this->_ir_BaseUrl, $settings['affiliate-id']));
 					}
 					
 					$content .= $this->getCouponMarkupForCouponData($coupon);
+					
+					if(0 == $counter % 3) {
+						$content .= '<div class="coupon-network-related-coupon-clear"></div>';
+					}
 				}
 				$content .= '</div>';
 			}
