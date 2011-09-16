@@ -3,7 +3,7 @@
  Plugin Name: Coupon Network Related Coupons
  Plugin URI: http://www.couponnetwork.com
  Description: Easily display related coupons from Coupon Network on your blog posts.  Also includes shortcodes and template tags that you can use to display related coupons outside your blog posts.
- Version: 1.0.4
+ Version: 1.0.5
  Author: Coupon Network
  Author URI: http://www.couponnetwork.com
  */
@@ -153,6 +153,7 @@ if(!class_exists('Related_Coupons')) {
 			}
 			
 			$coupons = $this->getRelatedCouponDataForPost($post->ID);
+			$settings = $this->getSettings();
 				
 			$content = '';
 			if(!empty($coupons)) {
@@ -277,7 +278,7 @@ if(!class_exists('Related_Coupons')) {
 		}
 		
 		private function getKeywordIndex($item, $keywords) {
-			$words = $item['description'].' '.$item['name'].' '.implode(' ', $item['stores']).' '.implode(' ', $item['categories']);
+			$words = $item['description'].' '.$item['name'].' '.implode(' ', (array)$item['stores']).' '.implode(' ', $item['categories']);
 			$words = preg_replace(array('/[^A-Za-z0-9\s]/', '/\s+/'), array('', ' '), strtolower($words));
 			$words = array_unique(array_filter(explode(' ', $words)));
 		
@@ -537,11 +538,14 @@ if(!class_exists('Related_Coupons')) {
 
 		private function getCouponNetworkFeedItems() {
 			$items = get_transient($this->_transient_Feed);
+			error_log('Transient items');
+			error_log(print_r($items,true));
 			
-			if(!is_array($items)) {
+			if(!is_array($items) || empty($items) || true) {
 				$items = array();
 				
 				$response = wp_remote_get($this->_cn_FeedUrl);
+				
 				if(!is_wp_error($response)) {
 					$xml = @simplexml_load_string(wp_remote_retrieve_body($response));
 					if(is_object($xml)) {
@@ -587,17 +591,21 @@ if(!class_exists('Related_Coupons')) {
 							
 							
 							/// CN STORES
+							
+							/**
 							$data['stores'] = array();
 							foreach($children->stores->store as $store) {
 								$data['stores'][] = (string)$store->name;
 							}
+							 * 
+							 */
 							
 							$items[] = $data;
 						}
 					}
 				}				
 				
-				set_transient($this->_transient_Feed, $items, $this->_cn_CacheExpirationTime);
+ 				set_transient($this->_transient_Feed, $items, $this->_cn_CacheExpirationTime);
 			}
 		
 			return $items;
