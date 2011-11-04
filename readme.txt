@@ -3,7 +3,7 @@
 Tags: coupons, related
 Requires at least: 3.1
 Tested up to: 3.2
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 
 Easily align relevant coupons with your individual blog posts based on content, providing consistent revenue opportunities with 
 targeted and valuable offers. 

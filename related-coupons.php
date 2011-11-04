@@ -3,7 +3,7 @@
  Plugin Name: Coupon Network Related Coupons
  Plugin URI: http://www.couponnetwork.com
  Description: Easily display related coupons from Coupon Network on your blog posts.  Also includes shortcodes and template tags that you can use to display related coupons outside your blog posts.
- Version: 1.0.6
+ Version: 1.0.7
  Author: Coupon Network
  Author URI: http://www.couponnetwork.com
  */
@@ -164,10 +164,10 @@ if(!class_exists('Related_Coupons')) {
 				foreach($coupons as $coupon) {
 					$counter++;
 					
-					$coupon['link'] = add_query_arg(array('utm_medium' => 'related_coupons'), $coupon['link']);
-					
 					if(!empty($settings['affiliate-id'])) {
 						$coupon['link'] = add_query_arg(array('u' => urlencode($coupon['link'])), sprintf($this->_ir_BaseUrl, $settings['affiliate-id']));
+					} else {
+						$coupon['link'] = add_query_arg(array('utm_medium' => 'related_coupons'), $coupon['link']);
 					}
 					
 					$content .= $this->getCouponMarkupForCouponData($coupon);
